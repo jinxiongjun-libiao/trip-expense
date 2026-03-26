@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>团组记账</title>
+<style>
+:root {
+  --primary: #4A90D9;
+  --primary-light: #E8F0FE;
+  --accent: #F5A623;
+  --danger: #E74C3C;
+  --success: #27AE60;
+  --bg: #F5F7FA;
+  --card: #fff;
+  --text: #2C3E50;
+  --text-light: #95A5A6;
+  --border: #E8E8E8;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+  --nav-h: 56px;
+  --header-h: 48px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--text); font-size:15px; line-height:1.5; overflow:hidden; height:100vh; }
+#app { display:flex; flex-direction:column; height:100vh; max-width:500px; margin:0 auto; background:var(--bg); position:relative; }
+header { height:var(--header-h); display:flex; align-items:center; justify-content:center; background:var(--primary);
+  color:#fff; font-size:16px; font-weight:600; flex-shrink:0; padding:0 16px; position:relative; }
+header .btn-back { position:absolute; left:8px; background:none; border:none; color:#fff; font-size:20px; padding:8px; cursor:pointer; }
+main { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 16px; }
+nav#navbar { height:var(--nav-h); display:flex; background:var(--card); border-top:1px solid var(--border);
+  flex-shrink:0; padding-bottom:env(safe-area-inset-bottom); }
+nav button { flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; font-size:11px; color:var(--text-light); cursor:pointer; gap:2px; transition:.2s; }
+nav button .icon { font-size:22px; }
+nav button.active { color:var(--primary); }
+
+/* 卡片 */
+.card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
+.card-title { font-size:14px; font-weight:600; color:var(--text-light); margin-bottom:10px; }
+.stat-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.stat-label { color:var(--text-light); font-size:13px; }
+.stat-value { font-weight:700; font-size:18px; }
+.stat-value.positive { color:var(--danger); }
+.stat-value.negative { color:var(--success); }
+
+/* 按钮 */
+.btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 20px; border-radius:8px;
+  border:none; font-size:15px; font-weight:600; cursor:pointer; transition:.2s; }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:active { background:#3A7BC8; }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-outline { background:none; border:1px solid var(--border); color:var(--text); }
+.btn-block { width:100%; }
+.btn-sm { padding:6px 14px; font-size:13px; }
+
+/* 表单 */
+.form-group { margin-bottom:14px; }
+.form-label { display:block; font-size:13px; color:var(--text-light); margin-bottom:6px; font-weight:500; }
+.form-input { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:15px;
+  background:var(--card); color:var(--text); outline:none; transition:.2s; }
+.form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+.amount-input { font-size:32px; font-weight:700; text-align:center; color:var(--accent); border:none;
+  background:none; width:100%; padding:10px 0; outline:none; }
+.amount-input::placeholder { color:#ddd; }
+
+/* 分类选择 */
+.cat-grid { display:flex; flex-wrap:wrap; gap:8px; }
+.cat-btn { width:calc(25% - 6px); display:flex; flex-direction:column; align-items:center; padding:10px 4px;
+  border-radius:10px; border:2px solid transparent; background:var(--bg); cursor:pointer; transition:.2s; font-size:12px; color:var(--text-light); }
+.cat-btn .emoji { font-size:24px; margin-bottom:2px; }
+.cat-btn.active { border-color:var(--primary); background:var(--primary-light); color:var(--primary); }
+
+/* 成员选择 */
+.member-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.chip { padding:6px 14px; border-radius:20px; font-size:13px; cursor:pointer; transition:.2s;
+  border:1px solid var(--border); background:var(--card); }
+.chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.chip.payer { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+/* 列表 */
+.date-group { margin-bottom:16px; }
+.date-header { font-size:13px; color:var(--text-light); font-weight:600; padding:4px 0 6px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+.expense-item { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f0; cursor:pointer; }
+.expense-item:last-child { border-bottom:none; }
+.expense-icon { font-size:28px; margin-right:10px; }
+.expense-info { flex:1; }
+.expense-note { font-size:14px; font-weight:500; }
+.expense-meta { font-size:12px; color:var(--text-light); }
+.expense-amount { font-size:16px; font-weight:700; color:var(--accent); text-align:right; }
+
+/* 结算 */
+.settle-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  box-shadow:var(--shadow); border-left:4px solid var(--primary); }
+.settle-card.owes { border-left-color:var(--danger); }
+.settle-card.owed { border-left-color:var(--success); }
+.settle-name { font-size:16px; font-weight:600; margin-bottom:8px; }
+.settle-detail { display:flex; justify-content:space-between; font-size:13px; color:var(--text-light); padding:2px 0; }
+.settle-balance { font-size:20px; font-weight:700; margin-top:6px; }
+.transfer-item { display:flex; align-items:center; padding:12px; background:var(--card); border-radius:var(--radius);
+  margin-bottom:8px; box-shadow:var(--shadow); font-size:14px; }
+.transfer-arrow { margin:0 10px; color:var(--primary); font-weight:700; }
+.transfer-amount { margin-left:auto; font-weight:700; color:var(--accent); }
+
+/* 设置 */
+.setting-section { margin-bottom:20px; }
+.setting-section h3 { font-size:14px; color:var(--text-light); margin-bottom:8px; }
+.member-item { display:flex; align-items:center; background:var(--card); padding:12px; border-radius:10px;
+  margin-bottom:6px; box-shadow:var(--shadow); }
+.member-item .name { flex:1; font-weight:500; }
+.member-item .detail { font-size:12px; color:var(--text-light); margin-right:10px; }
+.member-item .del-btn { background:none; border:none; color:var(--danger); font-size:18px; cursor:pointer; padding:4px 8px; }
+
+/* 分摊方式 */
+.split-tabs { display:flex; gap:0; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.split-tab { flex:1; padding:8px; text-align:center; font-size:13px; cursor:pointer; background:var(--card); transition:.2s; border:none; }
+.split-tab.active { background:var(--primary); color:#fff; }
+
+/* 欢迎页 */
+.welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; text-align:center; }
+.welcome h2 { font-size:24px; margin-bottom:8px; }
+.welcome p { color:var(--text-light); margin-bottom:24px; }
+.welcome .emoji-big { font-size:64px; margin-bottom:16px; }
+
+/* Toast */
+.toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff;
+  padding:10px 24px; border-radius:20px; font-size:14px; z-index:999; opacity:0; transition:.3s;
+  pointer-events:none; max-width:80%; text-align:center; }
+.toast.show { opacity:1; }
+
+/* 模态框 */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:100; display:none;
+  align-items:flex-end; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:var(--card); border-radius:16px 16px 0 0; padding:20px; width:100%; max-width:500px;
+  max-height:80vh; overflow-y:auto; animation:slideUp .3s; }
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.modal h3 { font-size:17px; margin-bottom:16px; text-align:center; }
+
+/* 空状态 */
+.empty { text-align:center; padding:40px 20px; color:var(--text-light); }
+.empty .emoji-big { font-size:48px; margin-bottom:12px; }
+
+/* 选择团组 */
+.trip-item { display:flex; align-items:center; background:var(--card); padding:14px; border-radius:10px;
+  margin-bottom:8px; box-shadow:var(--shadow); cursor:pointer; transition:.2s; }
+.trip-item:active { background:var(--primary-light); }
+.trip-item .name { flex:1; font-weight:500; }
+.trip-item .count { font-size:12px; color:var(--text-light); }
+
+.flex-between { display:flex; justify-content:space-between; align-items:center; }
+.mt-8 { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+.mb-8 { margin-bottom:8px; }
+.text-center { text-align:center; }
+.text-danger { color:var(--danger); }
+.text-success { color:var(--success); }
+
+/* 编辑模式下自定义金额 */
+.custom-split-list { margin-top:8px; }
+.custom-split-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.custom-split-row label { flex:1; font-size:13px; }
+.custom-split-row input { width:100px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-size:14px; text-align:right; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <span id="headerTitle">团组记账</span>
+  </header>
+  <main id="content"></main>
+  <nav id="navbar">
+    <button data-view="record" onclick="showView('record')"><span class="icon">📝</span>记账</button>
+    <button data-view="list" onclick="showView('list')"><span class="icon">📋</span>明细</button>
+    <button data-view="settle" onclick="showView('settle')"><span class="icon">💰</span>结算</button>
+    <button data-view="settings" onclick="showView('settings')"><span class="icon">⚙️</span>设置</button>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script>
+// ===== 常量 =====
+const CATEGORIES = [
+  { key:'flight', name:'机票', icon:'✈️' },
+  { key:'hotel', name:'住宿', icon:'🏨' },
+  { key:'food', name:'餐费', icon:'🍜' },
+  { key:'ticket', name:'门票', icon:'🎫' },
+  { key:'transport', name:'交通', icon:'🚗' },
+  { key:'shopping', name:'购物', icon:'🛒' },
+  { key:'other', name:'其他', icon:'📦' },
+];
+const WEEKDAYS = ['日','一','二','三','四','五','六'];
+
+// ===== 数据层 =====
+let trips = [];
+let currentTripId = null;
+let currentView = 'record';
+let editingExpenseId = null;
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function save() { localStorage.setItem('tripExpenseData', JSON.stringify({ trips, currentTripId })); }
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('tripExpenseData'));
+    if (d) { trips = d.trips || []; currentTripId = d.currentTripId || null; }
+  } catch(e) { trips = []; currentTripId = null; }
+}
+function trip() { return trips.find(t => t.id === currentTripId); }
+
+function createTrip(name) {
+  const t = { id: uid(), name, households: [], expenses: [] };
+  trips.push(t);
+  currentTripId = t.id;
+  save();
+  return t;
+}
+function deleteTrip(id) {
+  trips = trips.filter(t => t.id !== id);
+  if (currentTripId === id) currentTripId = trips.length ? trips[0].id : null;
+  save();
+}
+function addHousehold(name, adults, children) {
+  const t = trip(); if (!t) return;
+  t.households.push({ id: uid(), name, adults: Number(adults)||1, children: Number(children)||0 });
+  save();
+}
+function removeHousehold(hid) {
+  const t = trip(); if (!t) return;
+  t.households = t.households.filter(h => h.id !== hid);
+  t.expenses = t.expenses.filter(e => {
+    if (e.paidBy === hid) return false;
+    e.participants = e.participants.filter(p => p !== hid);
+    return e.participants.length > 0;
+  });
+  save();
+}
+function addExpense(data) {
+  const t = trip(); if (!t) return;
+  t.expenses.push({ id: uid(), ...data });
+  t.expenses.sort((a,b) => b.date.localeCompare(a.date));
+  save();
+}
+function updateExpense(id, data) {
+  const t = trip(); if (!t) return;
+  const idx = t.expenses.findIndex(e => e.id === id);
+  if (idx >= 0) { t.expenses[idx] = { ...t.expenses[idx], ...data }; }
+  t.expenses.sort((a,b) => b.date.localeCompare(a.date));
+  save();
+}
+function deleteExpense(id) {
+  const t = trip(); if (!t) return;
+  t.expenses = t.expenses.filter(e => e.id !== id);
+  save();
+}
+
+// ===== 计算引擎 =====
+function calcSplit(expense, households) {
+  const parts = expense.participants;
+  const hmap = {};
+  households.forEach(h => hmap[h.id] = h);
+  if (expense.splitMode === 'custom' && expense.customSplit) {
+    return expense.customSplit;
+  }
+  if (expense.splitMode === 'headcount') {
+    const ap = expense.adultPrice || 0;
+    const cp = expense.childPrice || 0;
+    const result = {};
+    parts.forEach(pid => {
+      const h = hmap[pid]; if(!h) return;
+      result[pid] = h.adults * ap + h.children * cp;
+    });
+    return result;
+  }
+  // equal
+  const each = parts.length > 0 ? expense.amount / parts.length : 0;
+  const result = {};
+  parts.forEach(pid => result[pid] = each);
+  return result;
+}
+
+function calcSettlement() {
+  const t = trip(); if (!t) return { details:[], transfers:[] };
+  const balances = {};
+  t.households.forEach(h => balances[h.id] = { id:h.id, name:h.name, paid:0, shouldPay:0 });
+  t.expenses.forEach(exp => {
+    if (balances[exp.paidBy]) balances[exp.paidBy].paid += exp.amount;
+    const split = calcSplit(exp, t.households);
+    Object.entries(split).forEach(([hid, amt]) => { if(balances[hid]) balances[hid].shouldPay += amt; });
+  });
+  const details = Object.values(balances).map(b => ({ ...b, balance: b.shouldPay - b.paid }));
+  // balance > 0 → 还欠钱，< 0 → 该收钱
+  const debtors = details.filter(d => d.balance > 0.01).map(d=>({...d})).sort((a,b)=>b.balance-a.balance);
+  const creditors = details.filter(d => d.balance < -0.01).map(d=>({...d})).sort((a,b)=>a.balance-b.balance);
+  const transfers = [];
+  let i=0, j=0;
+  while (i < debtors.length && j < creditors.length) {
+    const amt = Math.min(debtors[i].balance, -creditors[j].balance);
+    transfers.push({ from:debtors[i].name, to:creditors[j].name, amount:Math.round(amt*100)/100 });
+    debtors[i].balance -= amt;
+    creditors[j].balance += amt;
+    if (debtors[i].balance < 0.01) i++;
+    if (creditors[j].balance > -0.01) j++;
+  }
+  return { details, transfers };
+}
+
+// ===== UI渲染 =====
+const $ = id => document.getElementById(id);
+function showView(view) {
+  currentView = view;
+  document.querySelectorAll('#navbar button').forEach(b => b.classList.toggle('active', b.dataset.view===view));
+  render();
+}
+
+function render() {
+  const t = trip();
+  $('headerTitle').textContent = t ? t.name : '团组记账';
+  if (!t) { renderWelcome(); return; }
+  const renderers = { record:renderRecord, list:renderList, settle:renderSettle, settings:renderSettings };
+  (renderers[currentView] || renderRecord)();
+}
+
+function renderWelcome() {
+  let html = '<div class="welcome"><div class="emoji-big">🧳</div><h2>团组记账</h2><p>轻松记录团队出行费用，自动AA结算</p>';
+  if (trips.length > 0) {
+    html += '<div style="width:100%;margin-bottom:16px;">';
+    trips.forEach(t => {
+      const n = t.expenses.length;
+      const total = t.expenses.reduce((s,e)=>s+e.amount,0);
+      html += `<div class="trip-item" onclick="currentTripId='${t.id}';save();showView('record')">
+        <span class="name">${esc(t.name)}</span>
+        <span class="count">${n}笔 ¥${fmt(total)}</span></div>`;
+    });
+    html += '</div>';
+  }
+  html += `<button class="btn btn-primary btn-block" onclick="showCreateTrip()">＋ 新建团组</button></div>`;
+  $('content').innerHTML = html;
+}
+
+function renderRecord() {
+  const t = trip();
+  const hs = t.households;
+  const total = t.expenses.reduce((s,e)=>s+e.amount, 0);
+  const editing = editingExpenseId ? t.expenses.find(e=>e.id===editingExpenseId) : null;
+
+  let html = '';
+
+  if (hs.length === 0) {
+    html += `<div class="empty"><div class="emoji-big">👥</div><p>请先添加参与的家庭</p>
+      <button class="btn btn-primary" onclick="showView('settings')">去设置</button></div>`;
+    $('content').innerHTML = html;
+    return;
+  }
+
+  const eData = editing || { amount:'', category:'food', date:todayStr(), paidBy:hs[0].id,
+    participants:hs.map(h=>h.id), splitMode:'equal', customSplit:null, adultPrice:'', childPrice:'', note:'' };
+
+  html += `<div class="card">
+    <div class="form-group text-center">
+      <div style="font-size:13px;color:var(--text-light);margin-bottom:2px;">金额（元）</div>
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:28px;font-weight:700;color:var(--accent);margin-right:4px;">¥</span>
+        <input type="text" inputmode="decimal" class="amount-input" id="expAmount"
+          placeholder="0.00" value="${eData.amount||''}" oninput="this.value=this.value.replace(/[^0-9.]/g,'')"
+          style="border-bottom:2px solid var(--border);border-radius:0;">
+      </div>
+    </div>
+    <div class="form-group"><div class="form-label">分类</div><div class="cat-grid" id="catGrid">`;
+  CATEGORIES.forEach(c => {
+    html += `<div class="cat-btn${eData.category===c.key?' active':''}" data-cat="${c.key}" onclick="selectCat(this)">
+      <span class="emoji">${c.icon}</span>${c.name}</div>`;
+  });
+  html += `</div></div>
+    <div class="form-group"><div class="form-label">日期</div>
+      <input type="date" class="form-input" id="expDate" value="${eData.date}"></div>
+    <div class="form-group"><div class="form-label">谁付的</div><div class="member-chips" id="payerChips">`;
+  hs.forEach(h => {
+    html += `<div class="chip${eData.paidBy===h.id?' payer':''}" data-hid="${h.id}" onclick="selectPayer(this)">${esc(h.name)}</div>`;
+  });
+  html += `</div></div>
+    <div class="form-group"><div class="form-label flex-between">参与人 <small style="cursor:pointer;color:var(--primary)" onclick="toggleAllParts()">全选/取消</small></div>
+    <div class="member-chips" id="partChips">`;
+  hs.forEach(h => {
+    html += `<div class="chip${eData.participants.includes(h.id)?' active':''}" data-hid="${h.id}" onclick="togglePart(this)">${esc(h.name)}</div>`;
+  });
+  html += `</div></div>
+    <div class="form-group"><div class="form-label">分摊方式</div><div class="split-tabs">
+      <button class="split-tab${eData.splitMode==='equal'?' active':''}" onclick="setSplit('equal',this)">均分</button>
+      <button class="split-tab${eData.splitMode==='headcount'?' active':''}" onclick="setSplit('headcount',this)">按人头</button>
+      <button class="split-tab${eData.splitMode==='custom'?' active':''}" onclick="setSplit('custom',this)">自定义</button>
+    </div><div id="customSplitArea"></div><div id="headcountPreview" style="margin-top:6px;"></div></div>
+    <div class="form-group"><div class="form-label">备注</div>
+      <input type="text" class="form-input" id="expNote" placeholder="简要说明" maxlength="50" value="${esc(eData.note||'')}"></div>
+    <button class="btn btn-primary btn-block" onclick="saveExpense()" id="saveBtn">${editing?'更新':'保存'}</button>
+    ${editing?'<button class="btn btn-outline btn-block mt-8" onclick="cancelEdit()">取消编辑</button>':''}
+  </div>`;
+  $('content').innerHTML = html;
+  if (eData.splitMode === 'custom') renderCustomSplit(eData.customSplit);
+  if (eData.splitMode === 'headcount') renderHeadcountInputs(eData.adultPrice, eData.childPrice);
+}
+
+function renderList() {
+  const t = trip();
+  const total = t.expenses.reduce((s,e)=>s+e.amount, 0);
+  let html = `<div class="card text-center" style="padding:8px 14px;">
+    <span style="font-size:13px;color:var(--text-light);">${t.expenses.length}笔记录 · 总花费</span>
+    <div style="font-size:22px;font-weight:700;color:var(--accent);">¥${fmt(total)}</div></div>`;
+  if (t.expenses.length === 0) {
+    html += '<div class="empty"><div class="emoji-big">📋</div><p>还没有任何记录</p></div>';
+    $('content').innerHTML = html;
+    return;
+  }
+  const hmap = {}; t.households.forEach(h => hmap[h.id] = h.name);
+  const groups = {};
+  t.expenses.forEach(e => { (groups[e.date] = groups[e.date]||[]).push(e); });
+  const dates = Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+  dates.forEach(d => {
+    const dt = new Date(d);
+    const dayTotal = groups[d].reduce((s,e)=>s+e.amount,0);
+    html += `<div class="date-group"><div class="date-header flex-between">
+      <span>${d.slice(5)} 周${WEEKDAYS[dt.getDay()]}</span><span>¥${fmt(dayTotal)}</span></div>`;
+    groups[d].forEach(e => {
+      const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
+      html += `<div class="expense-item" onclick="showExpenseDetail('${e.id}')">
+        <span class="expense-icon">${cat.icon}</span>
+        <div class="expense-info">
+          <div class="expense-note">${esc(e.note||cat.name)}</div>
+          <div class="expense-meta">${esc(hmap[e.paidBy]||'?')}付 · ${e.participants.length}户参与</div>
+        </div>
+        <div class="expense-amount">¥${fmt(e.amount)}</div></div>`;
+    });
+    html += '</div>';
+  });
+  $('content').innerHTML = html;
+}
+
+function renderSettle() {
+  const t = trip();
+  if (t.expenses.length === 0) {
+    $('content').innerHTML = '<div class="empty"><div class="emoji-big">💰</div><p>记几笔账再来结算吧</p></div>';
+    return;
+  }
+  const { details, transfers } = calcSettlement();
+  const total = t.expenses.reduce((s,e)=>s+e.amount, 0);
+  let html = `<div class="card text-center" style="padding:8px 14px;">
+    <span style="font-size:13px;color:var(--text-light);">总花费</span>
+    <div style="font-size:22px;font-weight:700;color:var(--accent);">¥${fmt(total)}</div></div>`;
+  html += '<div class="card-title" style="padding:4px 0;">各户明细</div>';
+  details.forEach(d => {
+    const cls = d.balance > 0.01 ? 'owes' : d.balance < -0.01 ? 'owed' : '';
+    html += `<div class="settle-card ${cls}">
+      <div class="settle-name">${esc(d.name)}</div>
+      <div class="settle-detail"><span>垫付</span><span>¥${fmt(d.paid)}</span></div>
+      <div class="settle-detail"><span>应付</span><span>¥${fmt(d.shouldPay)}</span></div>
+      <div class="settle-balance ${d.balance>0.01?'text-danger':'text-success'}">${d.balance>0.01?'还需付 ¥'+fmt(d.balance):'应收回 ¥'+fmt(Math.abs(d.balance))}</div></div>`;
+  });
+  if (transfers.length > 0) {
+    html += '<div class="card-title" style="padding:8px 0 4px;">转账建议</div>';
+    transfers.forEach(tr => {
+      html += `<div class="transfer-item">
+        <span>${esc(tr.from)}</span><span class="transfer-arrow">→</span><span>${esc(tr.to)}</span>
+        <span class="transfer-amount">¥${fmt(tr.amount)}</span></div>`;
+    });
+  }
+  html += `<button class="btn btn-primary btn-block mt-12" onclick="exportExcel()">📊 导出Excel</button>`;
+  $('content').innerHTML = html;
+}
+
+function renderSettings() {
+  const t = trip();
+  let html = '<div class="setting-section"><h3>👥 参与家庭</h3>';
+  if (t.households.length === 0) {
+    html += '<div class="empty" style="padding:16px;"><p>还没有添加家庭</p></div>';
+  }
+  t.households.forEach(h => {
+    html += `<div class="member-item">
+      <span class="name">${esc(h.name)}</span>
+      <span class="detail">${h.adults}大${h.children?h.children+'小':''}</span>
+      <button class="del-btn" onclick="if(confirm('删除「${esc(h.name)}」？相关记录也会删除'))removeHH('${h.id}')">✕</button></div>`;
+  });
+  html += `<button class="btn btn-outline btn-block mt-8" onclick="showAddHousehold()">＋ 添加家庭</button></div>`;
+
+  html += `<div class="setting-section"><h3>⚙️ 团组设置</h3>
+    <div class="card"><div class="form-group"><div class="form-label">团组名称</div>
+      <input class="form-input" id="tripNameInput" value="${esc(t.name)}" onchange="renameTripFn()"></div></div></div>`;
+
+  html += `<div class="setting-section"><h3>📁 数据管理</h3>
+    <button class="btn btn-outline btn-block mb-8" onclick="exportExcel()">📊 导出Excel</button>
+    <button class="btn btn-outline btn-block mb-8" onclick="exportBackup()">💾 备份数据(JSON)</button>
+    <button class="btn btn-outline btn-block mb-8" onclick="$('importFile').click()">📂 恢复数据(JSON)</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)">
+    </div>`;
+
+  html += `<div class="setting-section"><h3>🗂️ 团组管理</h3>`;
+  trips.forEach(tr => {
+    const isCur = tr.id === currentTripId;
+    html += `<div class="trip-item" style="${isCur?'border:2px solid var(--primary)':''}">
+      <span class="name" onclick="switchTrip('${tr.id}')">${esc(tr.name)}${isCur?' (当前)':''}</span>
+      ${!isCur?`<button class="del-btn" onclick="if(confirm('确定删除？')){deleteTrip('${tr.id}');render();}">✕</button>`:''}
+    </div>`;
+  });
+  html += `<button class="btn btn-outline btn-block mt-8" onclick="showCreateTrip()">＋ 新建团组</button></div>`;
+  $('content').innerHTML = html;
+}
+
+// ===== 交互逻辑 =====
+function selectCat(el) {
+  el.parentElement.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectPayer(el) {
+  el.parentElement.querySelectorAll('.chip').forEach(b=>b.classList.remove('payer'));
+  el.classList.add('payer');
+}
+function togglePart(el) { el.classList.toggle('active'); }
+function toggleAllParts() {
+  const chips = document.querySelectorAll('#partChips .chip');
+  const allActive = Array.from(chips).every(c=>c.classList.contains('active'));
+  chips.forEach(c => c.classList.toggle('active', !allActive));
+}
+function setSplit(mode, el) {
+  el.parentElement.querySelectorAll('.split-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  $('customSplitArea').innerHTML = '';
+  $('headcountPreview').innerHTML = '';
+  if (mode === 'custom') renderCustomSplit(null);
+  if (mode === 'headcount') renderHeadcountInputs('', '');
+}
+function renderHeadcountInputs(ap, cp) {
+  const t = trip(); if (!t) return;
+  let html = `<div style="display:flex;gap:8px;margin-bottom:8px;">
+    <div style="flex:1"><div class="form-label">大人单价</div>
+      <input type="text" inputmode="decimal" class="form-input" id="adultPriceInput" placeholder="0" value="${ap||''}" oninput="calcHeadcountTotal()"></div>
+    <div style="flex:1"><div class="form-label">小孩单价</div>
+      <input type="text" inputmode="decimal" class="form-input" id="childPriceInput" placeholder="0" value="${cp||''}" oninput="calcHeadcountTotal()"></div></div>`;
+  html += '<div id="headcountDetail" style="font-size:12px;color:var(--text-light);"></div>';
+  $('customSplitArea').innerHTML = html;
+  calcHeadcountTotal();
+}
+function calcHeadcountTotal() {
+  const t = trip(); if (!t) return;
+  const ap = parseFloat($('adultPriceInput')?.value) || 0;
+  const cp = parseFloat($('childPriceInput')?.value) || 0;
+  const parts = Array.from(document.querySelectorAll('#partChips .chip.active')).map(c=>c.dataset.hid);
+  const hmap = {}; t.households.forEach(h=>hmap[h.id]=h);
+  let total = 0;
+  let lines = [];
+  parts.forEach(pid => {
+    const h = hmap[pid]; if(!h) return;
+    const sub = h.adults * ap + h.children * cp;
+    total += sub;
+    let desc = `${esc(h.name)}：${h.adults}大×${ap}`;
+    if(h.children > 0) desc += ` + ${h.children}小×${cp}`;
+    desc += ` = ¥${fmt(sub)}`;
+    lines.push(desc);
+  });
+  const detail = $('headcountDetail');
+  if (detail) detail.innerHTML = lines.join('<br>') + `<br><b style="color:var(--text);">合计 ¥${fmt(total)}</b>`;
+  // 自动回填总金额
+  if (ap > 0 || cp > 0) $('expAmount').value = total > 0 ? total : '';
+}
+function renderCustomSplit(existing) {
+  const t = trip(); if (!t) return;
+  const parts = Array.from(document.querySelectorAll('#partChips .chip.active')).map(c=>c.dataset.hid);
+  const hmap = {}; t.households.forEach(h=>hmap[h.id]=h.name);
+  let html = '<div class="custom-split-list">';
+  parts.forEach(pid => {
+    const val = existing && existing[pid] !== undefined ? existing[pid] : '';
+    html += `<div class="custom-split-row"><label>${esc(hmap[pid]||'?')}</label>
+      <input type="text" inputmode="decimal" class="custom-input" data-hid="${pid}" value="${val}" placeholder="金额" oninput="calcCustomTotal()"></div>`;
+  });
+  html += '</div>';
+  $('customSplitArea').innerHTML = html;
+  calcCustomTotal();
+}
+function calcCustomTotal() {
+  let sum = 0;
+  document.querySelectorAll('.custom-input').forEach(inp => { sum += parseFloat(inp.value) || 0; });
+  if (sum > 0) $('expAmount').value = sum;
+}
+
+function saveExpense() {
+  let amount = parseFloat($('expAmount').value);
+  if (!amount || amount <= 0) { toast('请输入金额'); return; }
+  const catEl = document.querySelector('.cat-btn.active');
+  const category = catEl ? catEl.dataset.cat : 'other';
+  const date = $('expDate').value || todayStr();
+  const payerEl = document.querySelector('#payerChips .payer');
+  if (!payerEl) { toast('请选择付款人'); return; }
+  const paidBy = payerEl.dataset.hid;
+  const participants = Array.from(document.querySelectorAll('#partChips .chip.active')).map(c=>c.dataset.hid);
+  if (participants.length === 0) { toast('请选择参与人'); return; }
+  const splitTabEl = document.querySelector('.split-tab.active');
+  const splitMode = splitTabEl ? (splitTabEl.textContent==='均分'?'equal':splitTabEl.textContent==='按人头'?'headcount':'custom') : 'equal';
+  let customSplit = null;
+  let adultPrice = null;
+  let childPrice = null;
+  if (splitMode === 'headcount') {
+    adultPrice = parseFloat($('adultPriceInput')?.value) || 0;
+    childPrice = parseFloat($('childPriceInput')?.value) || 0;
+    if (adultPrice <= 0 && childPrice <= 0) { toast('请输入大人或小孩单价'); return; }
+  }
+  if (splitMode === 'custom') {
+    customSplit = {};
+    let sum = 0;
+    document.querySelectorAll('.custom-input').forEach(inp => {
+      const v = parseFloat(inp.value) || 0;
+      customSplit[inp.dataset.hid] = v;
+      sum += v;
+    });
+    if (sum <= 0) { toast('请输入各户金额'); return; }
+    amount = sum;
+  }
+  const note = $('expNote').value.trim();
+  const data = { amount, category, date, paidBy, participants, splitMode, customSplit, adultPrice, childPrice, note };
+  if (editingExpenseId) {
+    updateExpense(editingExpenseId, data);
+    editingExpenseId = null;
+    toast('已更新');
+  } else {
+    addExpense(data);
+    toast('已保存 ✓');
+  }
+  render();
+}
+
+function cancelEdit() { editingExpenseId = null; render(); }
+
+function showExpenseDetail(eid) {
+  const t = trip(); if (!t) return;
+  const e = t.expenses.find(x=>x.id===eid); if (!e) return;
+  const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
+  const hmap = {}; t.households.forEach(h=>hmap[h.id]=h.name);
+  const split = calcSplit(e, t.households);
+  let html = `<h3>${cat.icon} ${esc(e.note||cat.name)}</h3>
+    <div style="text-align:center;font-size:28px;font-weight:700;color:var(--accent);margin-bottom:12px;">¥${fmt(e.amount)}</div>
+    <div class="settle-detail"><span>日期</span><span>${e.date}</span></div>
+    <div class="settle-detail"><span>付款</span><span>${esc(hmap[e.paidBy]||'?')}</span></div>
+    <div class="settle-detail"><span>分摊</span><span>${e.splitMode==='equal'?'均分':e.splitMode==='headcount'?'按人头':'自定义'}</span></div>
+    ${e.splitMode==='headcount'?`<div class="settle-detail"><span>大人单价</span><span>¥${fmt(e.adultPrice||0)}</span></div>
+    <div class="settle-detail"><span>小孩单价</span><span>¥${fmt(e.childPrice||0)}</span></div>`:''}
+    <div style="margin-top:10px;"><div class="form-label">各户分摊</div>`;
+  Object.entries(split).forEach(([hid,amt]) => {
+    html += `<div class="settle-detail"><span>${esc(hmap[hid]||'?')}</span><span>¥${fmt(amt)}</span></div>`;
+  });
+  html += `</div><div style="display:flex;gap:8px;margin-top:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="editExpenseFn('${eid}')">编辑</button>
+    <button class="btn btn-danger" style="flex:1" onclick="if(confirm('确定删除？')){deleteExpense('${eid}');closeModal();render();}">删除</button>
+  </div>`;
+  showModal(html);
+}
+
+function editExpenseFn(eid) { editingExpenseId = eid; closeModal(); showView('record'); }
+
+function showCreateTrip() {
+  showModal(`<h3>新建团组</h3>
+    <div class="form-group"><input class="form-input" id="newTripName" placeholder="例如：2026西藏团" maxlength="20"></div>
+    <button class="btn btn-primary btn-block" onclick="doCreateTrip()">创建</button>`);
+  setTimeout(()=>$('newTripName')&&$('newTripName').focus(), 300);
+}
+function doCreateTrip() {
+  const name = $('newTripName').value.trim();
+  if (!name) { toast('请输入团组名称'); return; }
+  createTrip(name);
+  closeModal();
+  showView('settings');
+  toast('创建成功，请先添加参与家庭');
+}
+
+function showAddHousehold() {
+  showModal(`<h3>添加家庭</h3>
+    <div class="form-group"><div class="form-label">家庭名称</div><input class="form-input" id="hhName" placeholder="例如：张三家" maxlength="10"></div>
+    <div style="display:flex;gap:10px;">
+      <div class="form-group" style="flex:1"><div class="form-label">大人数</div><input type="number" class="form-input" id="hhAdults" value="2" min="0" max="10"></div>
+      <div class="form-group" style="flex:1"><div class="form-label">小孩数</div><input type="number" class="form-input" id="hhChildren" value="0" min="0" max="10"></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="doAddHousehold()">添加</button>`);
+  setTimeout(()=>$('hhName')&&$('hhName').focus(), 300);
+}
+function doAddHousehold() {
+  const name = $('hhName').value.trim();
+  if (!name) { toast('请输入名称'); return; }
+  const t = trip();
+  if (t && t.households.some(h=>h.name===name)) { toast('名称已存在'); return; }
+  addHousehold(name, $('hhAdults').value, $('hhChildren').value);
+  closeModal();
+  render();
+  toast('已添加');
+}
+function removeHH(hid) { removeHousehold(hid); render(); }
+function renameTripFn() {
+  const t = trip(); if(!t) return;
+  t.name = $('tripNameInput').value.trim() || t.name;
+  save(); $('headerTitle').textContent = t.name;
+}
+
+function switchTrip(tid) { currentTripId = tid; save(); showView('record'); }
+
+// ===== 导出 =====
+function exportExcel() {
+  const t = trip(); if (!t) return;
+  const { details, transfers } = calcSettlement();
+  const hmap = {}; t.households.forEach(h => hmap[h.id] = h.name);
+  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
+    <style>td,th{padding:4px 8px;border:1px solid #ccc;} th{background:#4A90D9;color:#fff;} .num{mso-number-format:"\\#\\,\\#\\#0\\.00";}</style></head><body>`;
+  // Sheet 1: 费用明细
+  html += `<table><tr><th colspan="9">${esc(t.name)} - 费用明细</th></tr>
+    <tr><th>日期</th><th>分类</th><th>备注</th><th>金额</th><th>付款人</th><th>参与户</th><th>分摊方式</th><th>大人单价</th><th>小孩单价</th></tr>`;
+  t.expenses.forEach(e => {
+    const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
+    html += `<tr><td>${e.date}</td><td>${cat.name}</td><td>${esc(e.note||'')}</td>
+      <td class="num">${e.amount}</td><td>${esc(hmap[e.paidBy]||'')}</td>
+      <td>${e.participants.map(p=>esc(hmap[p]||'')).join('、')}</td>
+      <td>${e.splitMode==='equal'?'均分':e.splitMode==='headcount'?'按人头':'自定义'}</td>
+      <td class="num">${e.adultPrice||''}</td><td class="num">${e.childPrice||''}</td></tr>`;
+  });
+  const total = t.expenses.reduce((s,e)=>s+e.amount,0);
+  html += `<tr><td colspan="3"><b>合计</b></td><td class="num"><b>${total}</b></td><td colspan="3"></td></tr></table><br>`;
+  // Sheet 2: AA结算
+  html += `<table><tr><th colspan="4">${esc(t.name)} - AA结算</th></tr>
+    <tr><th>家庭</th><th>垫付</th><th>应付</th><th>差额</th></tr>`;
+  details.forEach(d => {
+    html += `<tr><td>${esc(d.name)}</td><td class="num">${d.paid.toFixed(2)}</td>
+      <td class="num">${d.shouldPay.toFixed(2)}</td><td class="num">${d.balance.toFixed(2)}</td></tr>`;
+  });
+  html += '</table><br>';
+  if (transfers.length > 0) {
+    html += `<table><tr><th colspan="3">转账建议</th></tr><tr><th>付款方</th><th>收款方</th><th>金额</th></tr>`;
+    transfers.forEach(tr => {
+      html += `<tr><td>${esc(tr.from)}</td><td>${esc(tr.to)}</td><td class="num">${tr.amount.toFixed(2)}</td></tr>`;
+    });
+    html += '</table>';
+  }
+  html += '</body></html>';
+  downloadFile(`${t.name}-记账明细.xls`, html, 'application/vnd.ms-excel');
+  toast('已导出Excel');
+}
+
+function exportBackup() {
+  downloadFile('团组记账-备份.json', JSON.stringify({ trips, currentTripId }, null, 2), 'application/json');
+  toast('已备份');
+}
+function importBackup(evt) {
+  const file = evt.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.trips) { trips = d.trips; currentTripId = d.currentTripId || (trips[0]&&trips[0].id); save(); render(); toast('恢复成功'); }
+      else toast('文件格式不对');
+    } catch(err) { toast('文件解析失败'); }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+// ===== 工具函数 =====
+function fmt(n) { return Number(n||0).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function todayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function downloadFile(name, content, type) {
+  const blob = new Blob(['\ufeff'+content], { type: type+';charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2000);
+}
+function showModal(html) { $('modalBody').innerHTML = html; $('modal').classList.add('show'); }
+function closeModal() { $('modal').classList.remove('show'); }
+
+// ===== 初始化 =====
+load();
+showView(trip() ? 'record' : 'record');
+render();
+</script>
+</body>
+</html>
