@@ -393,9 +393,9 @@ function renderRecord() {
   });
   html += `</div></div>
     <div class="form-group"><div class="form-label">分摊方式</div><div class="split-tabs">
-      <button class="split-tab${eData.splitMode==='equal'?' active':''}" onclick="setSplit('equal',this)">均分</button>
-      <button class="split-tab${eData.splitMode==='headcount'?' active':''}" onclick="setSplit('headcount',this)">按人头</button>
-      <button class="split-tab${eData.splitMode==='custom'?' active':''}" onclick="setSplit('custom',this)">自定义</button>
+      <button class="split-tab${eData.splitMode==='equal'?' active':''}" data-mode="equal" onclick="setSplit('equal',this)">均分</button>
+      <button class="split-tab${eData.splitMode==='headcount'?' active':''}" data-mode="headcount" onclick="setSplit('headcount',this)">按人头</button>
+      <button class="split-tab${eData.splitMode==='custom'?' active':''}" data-mode="custom" onclick="setSplit('custom',this)">自定义</button>
     </div><div id="customSplitArea"></div><div id="headcountPreview" style="margin-top:6px;"></div></div>
     <div class="form-group"><div class="form-label">备注</div>
       <input type="text" class="form-input" id="expNote" placeholder="简要说明" maxlength="50" value="${esc(eData.note||'')}"></div>
@@ -460,7 +460,7 @@ function renderSettle() {
       <div class="settle-name">${esc(d.name)}</div>
       <div class="settle-detail"><span>垫付</span><span>¥${fmt(d.paid)}</span></div>
       <div class="settle-detail"><span>应付</span><span>¥${fmt(d.shouldPay)}</span></div>
-      <div class="settle-balance ${d.balance>0.01?'text-danger':'text-success'}">${d.balance>0.01?'还需付 ¥'+fmt(d.balance):'应收回 ¥'+fmt(Math.abs(d.balance))}</div></div>`;
+      <div class="settle-balance ${d.balance>0.01?'text-danger':d.balance<-0.01?'text-success':''}">${d.balance>0.01?'还需付 ¥'+fmt(d.balance):d.balance<-0.01?'应收回 ¥'+fmt(Math.abs(d.balance)):'✓ 已结清'}</div></div>`;
   });
   if (transfers.length > 0) {
     html += '<div class="card-title" style="padding:8px 0 4px;">转账建议</div>';
@@ -599,7 +599,7 @@ function saveExpense() {
   const participants = Array.from(document.querySelectorAll('#partChips .chip.active')).map(c=>c.dataset.hid);
   if (participants.length === 0) { toast('请选择参与人'); return; }
   const splitTabEl = document.querySelector('.split-tab.active');
-  const splitMode = splitTabEl ? (splitTabEl.textContent==='均分'?'equal':splitTabEl.textContent==='按人头'?'headcount':'custom') : 'equal';
+  const splitMode = splitTabEl ? (splitTabEl.dataset.mode || 'equal') : 'equal';
   let customSplit = null;
   let adultPrice = null;
   let childPrice = null;
@@ -755,7 +755,7 @@ function importBackup(evt) {
   reader.onload = e => {
     try {
       const d = JSON.parse(e.target.result);
-      if (d.trips) { trips = d.trips; currentTripId = d.currentTripId || (trips[0]&&trips[0].id); save(); render(); toast('恢复成功'); }
+      if (d.trips && Array.isArray(d.trips)) { trips = d.trips; currentTripId = d.currentTripId || (trips[0]&&trips[0].id); save(); render(); toast('恢复成功'); }
       else toast('文件格式不对');
     } catch(err) { toast('文件解析失败'); }
   };
@@ -765,7 +765,7 @@ function importBackup(evt) {
 
 // ===== 工具函数 =====
 function fmt(n) { return Number(n||0).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
-function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML.replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function todayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function downloadFile(name, content, type) {
   const blob = new Blob(['\ufeff'+content], { type: type+';charset=utf-8' });
@@ -773,7 +773,7 @@ function downloadFile(name, content, type) {
   a.href = URL.createObjectURL(blob);
   a.download = name;
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function toast(msg) {
   const t = $('toast');
