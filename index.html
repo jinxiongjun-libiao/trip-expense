@@ -6,43 +6,65 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="团组记账">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%234A90D9' width='180' height='180' rx='40'/><text x='90' y='128' font-size='120' text-anchor='middle'>🧳</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%232563EB' width='180' height='180' rx='40'/><g fill='none' stroke='%23FFFFFF' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'><path d='M60 66V58a30 30 0 0 1 60 0v8'/><rect x='42' y='66' width='96' height='72' rx='16'/><path d='M70 92h40'/><path d='M78 138v16'/><path d='M102 138v16'/></g></svg>">
 <title>团组记账</title>
 <style>
 :root {
-  --primary: #4A90D9;
-  --primary-light: #E8F0FE;
+  --primary: #2563EB;
+  --primary-deep: #1D4ED8;
+  --primary-light: #EAF2FF;
+  --primary-soft: rgba(37, 99, 235, 0.12);
   --accent: #F5A623;
+  --accent-soft: #FFF4E6;
   --danger: #E74C3C;
   --success: #27AE60;
-  --bg: #F5F7FA;
-  --card: #fff;
-  --text: #2C3E50;
-  --text-light: #95A5A6;
-  --border: #E8E8E8;
-  --shadow: 0 2px 12px rgba(0,0,0,0.06);
-  --radius: 12px;
+  --bg: #F3F7FF;
+  --card: rgba(255,255,255,0.9);
+  --card-strong: #fff;
+  --text: #173259;
+  --text-light: #6B7C93;
+  --border: rgba(23, 50, 89, 0.09);
+  --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 8px 22px rgba(37, 99, 235, 0.08);
+  --radius: 16px;
   --nav-h: 56px;
   --header-h: 48px;
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  background:var(--bg); color:var(--text); font-size:15px; line-height:1.5; overflow:hidden; height:100vh; }
-#app { display:flex; flex-direction:column; height:100vh; max-width:500px; margin:0 auto; background:var(--bg); position:relative; }
-header { height:var(--header-h); display:flex; align-items:center; justify-content:center; background:var(--primary);
-  color:#fff; font-size:16px; font-weight:600; flex-shrink:0; padding:0 16px; position:relative; }
+html { color-scheme: light; }
+body { font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.12), transparent 24%),
+    radial-gradient(circle at 92% 14%, rgba(245, 166, 35, 0.12), transparent 18%),
+    linear-gradient(180deg, #F8FBFF 0%, #F3F7FF 100%);
+  color:var(--text); font-size:15px; line-height:1.5; overflow:hidden; height:100vh; }
+#app { display:flex; flex-direction:column; height:100vh; max-width:500px; margin:0 auto; background:transparent; position:relative; }
+header { height:var(--header-h); display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.72);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); color:var(--text); font-size:16px; font-weight:700;
+  flex-shrink:0; padding:0 16px; position:relative; border-bottom:1px solid rgba(255,255,255,0.7); box-shadow:0 6px 18px rgba(15,23,42,0.04); }
 header .btn-back { position:absolute; left:8px; background:none; border:none; color:#fff; font-size:20px; padding:8px; cursor:pointer; }
-main { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 16px; }
-nav#navbar { height:var(--nav-h); display:flex; background:var(--card); border-top:1px solid var(--border);
-  flex-shrink:0; padding-bottom:env(safe-area-inset-bottom); }
+main { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:14px 14px 18px; }
+nav#navbar { height:calc(var(--nav-h) + env(safe-area-inset-bottom)); display:flex; background:rgba(255,255,255,0.82); border-top:1px solid rgba(255,255,255,0.7);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); flex-shrink:0; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -8px 24px rgba(15,23,42,0.04); }
 nav button { flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; font-size:11px; color:var(--text-light); cursor:pointer; gap:2px; transition:.2s; }
-nav button .icon { font-size:22px; }
+  justify-content:center; font-size:11px; color:var(--text-light); cursor:pointer; gap:3px; transition:.2s; position:relative; }
+nav button .icon { width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:0; }
 nav button.active { color:var(--primary); }
+nav button.active::before { content:""; position:absolute; top:6px; left:50%; transform:translateX(-50%); width:28px; height:4px; border-radius:999px; background:var(--primary); }
+
+.icon-svg {
+  width:100%;
+  height:100%;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
 
 /* 卡片 */
-.card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
-.card-title { font-size:14px; font-weight:600; color:var(--text-light); margin-bottom:10px; }
+.card { background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.7); }
+.card-title { font-size:13px; font-weight:700; color:var(--text-light); margin-bottom:10px; letter-spacing:.02em; }
 .stat-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
 .stat-label { color:var(--text-light); font-size:13px; }
 .stat-value { font-weight:700; font-size:18px; }
@@ -50,12 +72,12 @@ nav button.active { color:var(--primary); }
 .stat-value.negative { color:var(--success); }
 
 /* 按钮 */
-.btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 20px; border-radius:8px;
+.btn { display:inline-flex; align-items:center; justify-content:center; padding:11px 20px; border-radius:12px;
   border:none; font-size:15px; font-weight:600; cursor:pointer; transition:.2s; }
-.btn-primary { background:var(--primary); color:#fff; }
-.btn-primary:active { background:#3A7BC8; }
+.btn-primary { background:linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%); color:#fff; box-shadow:var(--shadow-soft); }
+.btn-primary:active { background:linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-deep) 100%); }
 .btn-danger { background:var(--danger); color:#fff; }
-.btn-outline { background:none; border:1px solid var(--border); color:var(--text); }
+.btn-outline { background:rgba(255,255,255,0.72); border:1px solid var(--border); color:var(--text); }
 .btn-block { width:100%; }
 .btn-sm { padding:6px 14px; font-size:13px; }
 
@@ -63,7 +85,7 @@ nav button.active { color:var(--primary); }
 .form-group { margin-bottom:14px; }
 .form-label { display:block; font-size:13px; color:var(--text-light); margin-bottom:6px; font-weight:500; }
 .form-input { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:15px;
-  background:var(--card); color:var(--text); outline:none; transition:.2s; }
+  background:rgba(255,255,255,0.82); color:var(--text); outline:none; transition:.2s; }
 .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
 .amount-input { font-size:32px; font-weight:700; text-align:center; color:var(--accent); border:none;
   background:none; width:100%; padding:10px 0; outline:none; }
@@ -72,31 +94,31 @@ nav button.active { color:var(--primary); }
 /* 分类选择 */
 .cat-grid { display:flex; flex-wrap:wrap; gap:8px; }
 .cat-btn { width:calc(25% - 6px); display:flex; flex-direction:column; align-items:center; padding:10px 4px;
-  border-radius:10px; border:2px solid transparent; background:var(--bg); cursor:pointer; transition:.2s; font-size:12px; color:var(--text-light); }
-.cat-btn .emoji { font-size:24px; margin-bottom:2px; }
-.cat-btn.active { border-color:var(--primary); background:var(--primary-light); color:var(--primary); }
+  border-radius:14px; border:1px solid transparent; background:rgba(255,255,255,0.68); cursor:pointer; transition:.2s; font-size:12px; color:var(--text-light); box-shadow:inset 0 1px 0 rgba(255,255,255,0.5); }
+.cat-btn .emoji { width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:4px; color:currentColor; }
+.cat-btn.active { border-color:rgba(37,99,235,0.14); background:var(--primary-light); color:var(--primary); box-shadow:0 8px 18px rgba(37,99,235,0.12); }
 
 /* 成员选择 */
 .member-chips { display:flex; flex-wrap:wrap; gap:6px; }
 .chip { padding:6px 14px; border-radius:20px; font-size:13px; cursor:pointer; transition:.2s;
-  border:1px solid var(--border); background:var(--card); }
+  border:1px solid var(--border); background:rgba(255,255,255,0.78); }
 .chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
 .chip.payer { background:var(--accent); color:#fff; border-color:var(--accent); }
 
 /* 列表 */
 .date-group { margin-bottom:16px; }
-.date-header { font-size:13px; color:var(--text-light); font-weight:600; padding:4px 0 6px; border-bottom:1px solid var(--border); margin-bottom:8px; }
-.expense-item { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f0; cursor:pointer; }
+.date-header { font-size:13px; color:var(--text-light); font-weight:700; padding:4px 0 8px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+.expense-item { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid rgba(23,50,89,0.06); cursor:pointer; }
 .expense-item:last-child { border-bottom:none; }
 .expense-icon { font-size:28px; margin-right:10px; }
 .expense-info { flex:1; }
-.expense-note { font-size:14px; font-weight:500; }
+.expense-note { font-size:14px; font-weight:700; }
 .expense-meta { font-size:12px; color:var(--text-light); }
 .expense-amount { font-size:16px; font-weight:700; color:var(--accent); text-align:right; }
 
 /* 结算 */
 .settle-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
-  box-shadow:var(--shadow); border-left:4px solid var(--primary); }
+  box-shadow:var(--shadow); border-left:4px solid var(--primary); border:1px solid rgba(255,255,255,0.7); }
 .settle-card.owes { border-left-color:var(--danger); }
 .settle-card.owed { border-left-color:var(--success); }
 .settle-name { font-size:16px; font-weight:600; margin-bottom:8px; }
@@ -104,14 +126,15 @@ nav button.active { color:var(--primary); }
 .settle-balance { font-size:20px; font-weight:700; margin-top:6px; }
 .transfer-item { display:flex; align-items:center; padding:12px; background:var(--card); border-radius:var(--radius);
   margin-bottom:8px; box-shadow:var(--shadow); font-size:14px; }
-.transfer-arrow { margin:0 10px; color:var(--primary); font-weight:700; }
+.transfer-arrow { margin:0 10px; color:var(--primary); font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+.transfer-arrow .icon-svg { width:18px; height:18px; }
 .transfer-amount { margin-left:auto; font-weight:700; color:var(--accent); }
 
 /* 设置 */
 .setting-section { margin-bottom:20px; }
-.setting-section h3 { font-size:14px; color:var(--text-light); margin-bottom:8px; }
+.setting-section h3 { font-size:13px; color:var(--text-light); margin-bottom:10px; letter-spacing:.04em; }
 .member-item { display:flex; align-items:center; background:var(--card); padding:12px; border-radius:10px;
-  margin-bottom:6px; box-shadow:var(--shadow); }
+  margin-bottom:8px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.7); }
 .member-item .name { flex:1; font-weight:500; }
 .member-item .detail { font-size:12px; color:var(--text-light); margin-right:10px; }
 .member-item .del-btn { background:none; border:none; color:var(--danger); font-size:18px; cursor:pointer; padding:4px 8px; }
@@ -123,9 +146,10 @@ nav button.active { color:var(--primary); }
 
 /* 欢迎页 */
 .welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; text-align:center; }
-.welcome h2 { font-size:24px; margin-bottom:8px; }
+.welcome h2 { font-size:28px; margin-bottom:10px; letter-spacing:-0.03em; }
 .welcome p { color:var(--text-light); margin-bottom:24px; }
-.welcome .emoji-big { font-size:64px; margin-bottom:16px; }
+.welcome .emoji-big { width:72px; height:72px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--primary); background:var(--primary-soft); border-radius:24px; }
+.welcome .emoji-big.is-welcome { color:var(--primary-deep); background:linear-gradient(135deg, rgba(37,99,235,0.14), rgba(255,255,255,0.92)); }
 
 /* Toast */
 .toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff;
@@ -144,14 +168,147 @@ nav button.active { color:var(--primary); }
 
 /* 空状态 */
 .empty { text-align:center; padding:40px 20px; color:var(--text-light); }
-.empty .emoji-big { font-size:48px; margin-bottom:12px; }
+.empty .emoji-big { width:56px; height:56px; display:inline-flex; align-items:center; justify-content:center; margin:0 auto 12px; color:var(--primary); background:var(--primary-soft); border-radius:18px; }
+.empty .emoji-big.is-empty { color:var(--text-light); background:rgba(107,124,147,0.12); }
 
 /* 选择团组 */
 .trip-item { display:flex; align-items:center; background:var(--card); padding:14px; border-radius:10px;
-  margin-bottom:8px; box-shadow:var(--shadow); cursor:pointer; transition:.2s; }
+  margin-bottom:8px; box-shadow:var(--shadow); cursor:pointer; transition:.2s; border:1px solid rgba(255,255,255,0.7); }
 .trip-item:active { background:var(--primary-light); }
 .trip-item .name { flex:1; font-weight:500; }
 .trip-item .count { font-size:12px; color:var(--text-light); }
+
+.expense-icon {
+  width:34px;
+  height:34px;
+  margin-right:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--primary);
+  background:var(--primary-soft);
+  border-radius:12px;
+  flex:0 0 auto;
+}
+
+.btn-icon {
+  width:16px;
+  height:16px;
+  margin-right:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+.btn-icon .icon-svg,
+.section-icon .icon-svg {
+  width:100%;
+  height:100%;
+}
+
+.section-icon {
+  width:16px;
+  height:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:6px;
+  vertical-align:-2px;
+}
+
+.del-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.del-btn .icon-svg {
+  width:18px;
+  height:18px;
+}
+
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(255,255,255,0.18), transparent 18%),
+    linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+  color:#fff;
+}
+.hero-panel .card-title,
+.hero-panel .stat-label,
+.hero-panel .subtle-note { color:rgba(255,255,255,0.8); }
+.hero-panel .hero-total { font-size:30px; font-weight:800; letter-spacing:-0.04em; }
+.hero-panel .hero-meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.hero-pill {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.14);
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+}
+.section-kicker { font-size:12px; color:var(--text-light); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; }
+.summary-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:12px; }
+.summary-tile {
+  background:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:14px;
+  padding:12px 14px;
+  box-shadow:var(--shadow);
+}
+.summary-tile strong { display:block; font-size:20px; letter-spacing:-0.03em; }
+.summary-tile span { display:block; margin-top:4px; font-size:12px; color:var(--text-light); }
+.panel-stack > * + * { margin-top:12px; }
+.surface-card {
+  background:rgba(255,255,255,0.84);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+.surface-card .form-label:first-child { margin-top:0; }
+.subtle-note { font-size:12px; color:var(--text-light); }
+
+.amount-entry {
+  background:linear-gradient(180deg, rgba(37,99,235,0.06), rgba(255,255,255,0.75));
+}
+
+.expense-list-card,
+.settings-panel,
+.settle-summary-card {
+  background:rgba(255,255,255,0.84);
+  border:1px solid rgba(255,255,255,0.72);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:var(--shadow);
+  margin-bottom:12px;
+}
+
+button:focus-visible,
+input:focus-visible,
+.trip-item:focus-visible,
+.expense-item:focus-visible,
+.cat-btn:focus-visible,
+.chip:focus-visible,
+.split-tab:focus-visible {
+  outline:3px solid rgba(37,99,235,0.24);
+  outline-offset:2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+
+@media (max-width: 380px) {
+  .summary-grid { grid-template-columns:1fr; }
+  .cat-btn { width:calc(33.333% - 6px); }
+}
 
 .flex-between { display:flex; justify-content:space-between; align-items:center; }
 .mt-8 { margin-top:8px; }
@@ -175,10 +332,10 @@ nav button.active { color:var(--primary); }
   </header>
   <main id="content"></main>
   <nav id="navbar">
-    <button data-view="record" onclick="showView('record')"><span class="icon">📝</span>记账</button>
-    <button data-view="list" onclick="showView('list')"><span class="icon">📋</span>明细</button>
-    <button data-view="settle" onclick="showView('settle')"><span class="icon">💰</span>结算</button>
-    <button data-view="settings" onclick="showView('settings')"><span class="icon">⚙️</span>设置</button>
+    <button data-view="record" onclick="showView('record')"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="icon-svg"><path d="M8 4h8"></path><path d="M9 2h6v4H9z"></path><rect x="5" y="4" width="14" height="18" rx="2"></rect><path d="M9 10h6"></path><path d="M9 14h6"></path><path d="M9 18h4"></path></svg></span>记账</button>
+    <button data-view="list" onclick="showView('list')"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="icon-svg"><path d="M9 6h10"></path><path d="M9 12h10"></path><path d="M9 18h10"></path><circle cx="5" cy="6" r="1"></circle><circle cx="5" cy="12" r="1"></circle><circle cx="5" cy="18" r="1"></circle></svg></span>明细</button>
+    <button data-view="settle" onclick="showView('settle')"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="icon-svg"><path d="M4 7h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path><path d="M4 9h16"></path><path d="M16 14h.01"></path><path d="M7 14h4"></path><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path></svg></span>结算</button>
+    <button data-view="settings" onclick="showView('settings')"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="icon-svg"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.54V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.54 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.54-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.54-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.54V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.54 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9c0 .68.4 1.3 1.03 1.58.16.07.33.1.51.1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"></path></svg></span>设置</button>
   </nav>
 </div>
 <div class="toast" id="toast"></div>
@@ -189,15 +346,42 @@ nav button.active { color:var(--primary); }
 <script>
 // ===== 常量 =====
 const CATEGORIES = [
-  { key:'flight', name:'机票', icon:'✈️' },
-  { key:'hotel', name:'住宿', icon:'🏨' },
-  { key:'food', name:'餐费', icon:'🍜' },
-  { key:'ticket', name:'门票', icon:'🎫' },
-  { key:'transport', name:'交通', icon:'🚗' },
-  { key:'shopping', name:'购物', icon:'🛒' },
-  { key:'other', name:'其他', icon:'📦' },
+  { key:'flight', name:'机票', icon:'flight' },
+  { key:'hotel', name:'住宿', icon:'hotel' },
+  { key:'food', name:'餐费', icon:'food' },
+  { key:'ticket', name:'门票', icon:'ticket' },
+  { key:'transport', name:'交通', icon:'transport' },
+  { key:'shopping', name:'购物', icon:'shopping' },
+  { key:'other', name:'其他', icon:'other' },
 ];
 const WEEKDAYS = ['日','一','二','三','四','五','六'];
+
+const ICONS = {
+  trip: '<path d="M8 7V6a4 4 0 0 1 8 0v1"></path><rect x="5" y="7" width="14" height="12" rx="2"></rect><path d="M9 11h6"></path><path d="M10 19v2"></path><path d="M14 19v2"></path>',
+  record: '<path d="M8 4h8"></path><path d="M9 2h6v4H9z"></path><rect x="5" y="4" width="14" height="18" rx="2"></rect><path d="M9 10h6"></path><path d="M9 14h6"></path><path d="M9 18h4"></path>',
+  list: '<path d="M9 6h10"></path><path d="M9 12h10"></path><path d="M9 18h10"></path><circle cx="5" cy="6" r="1"></circle><circle cx="5" cy="12" r="1"></circle><circle cx="5" cy="18" r="1"></circle>',
+  settle: '<path d="M4 7h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path><path d="M4 9h16"></path><path d="M16 14h.01"></path><path d="M7 14h4"></path><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path>',
+  settings: '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.54V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.54 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.54-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.54-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.54V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.54 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9c0 .68.4 1.3 1.03 1.58.16.07.33.1.51.1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"></path>',
+  flight: '<path d="M3 16l18-5-18-5 5 5-5 5z"></path><path d="M8 11h13"></path>',
+  hotel: '<path d="M5 20V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12"></path><path d="M3 20h18"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M9 14h.01"></path><path d="M15 14h.01"></path><path d="M10 20v-4h4v4"></path>',
+  food: '<path d="M6 3v9"></path><path d="M10 3v9"></path><path d="M8 3v18"></path><path d="M15 3v7a3 3 0 0 0 3 3h0v8"></path>',
+  ticket: '<path d="M4 8a2 2 0 0 0 0 4"></path><path d="M20 8a2 2 0 0 1 0 4"></path><path d="M4 6h16v12H4z"></path><path d="M12 6v12"></path>',
+  transport: '<path d="M7 17h10"></path><path d="M5 17l1.5-7h11L19 17"></path><circle cx="8" cy="18" r="1.5"></circle><circle cx="16" cy="18" r="1.5"></circle><path d="M9 10V7h6v3"></path>',
+  shopping: '<path d="M6 7h15l-1.5 7.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.6L5 4H3"></path><circle cx="10" cy="19" r="1.5"></circle><circle cx="17" cy="19" r="1.5"></circle>',
+  other: '<path d="M12 3v18"></path><path d="M3 12h18"></path><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path>',
+  households: '<path d="M4 20v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"></path><circle cx="9" cy="8" r="3"></circle><path d="M14 20v-2a4 4 0 0 1 4-4h1"></path><circle cx="17" cy="9" r="2.5"></circle>',
+  export: '<path d="M12 3v12"></path><path d="M8 11l4 4 4-4"></path><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>',
+  backup: '<path d="M12 3v8"></path><path d="M8 7l4-4 4 4"></path><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path>',
+  import: '<path d="M12 21v-8"></path><path d="M8 17l4 4 4-4"></path><path d="M5 10V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"></path>',
+  trash: '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>',
+  plus: '<path d="M12 5v14"></path><path d="M5 12h14"></path>',
+  arrowRight: '<path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path>',
+};
+
+function iconSvg(name, className='icon-svg') {
+  const markup = ICONS[name] || ICONS.other;
+  return `<svg viewBox="0 0 24 24" class="${className}" aria-hidden="true">${markup}</svg>`;
+}
 
 // ===== 数据层 =====
 let trips = [];
@@ -329,8 +513,9 @@ function render() {
 }
 
 function renderWelcome() {
-  let html = '<div class="welcome"><div class="emoji-big">🧳</div><h2>团组记账</h2><p>轻松记录团队出行费用，自动AA结算</p>';
+  let html = `<div class="welcome"><div class="emoji-big is-welcome">${iconSvg('trip')}</div><h2>团组记账</h2><p>面向团组出行的轻量记账工具，快速记录费用，自动整理结算结果。</p>`;
   if (trips.length > 0) {
+    html += '<div class="summary-grid" style="width:100%;margin-bottom:16px;"><div class="summary-tile"><strong>' + trips.length + '</strong><span>已保存团组</span></div><div class="summary-tile"><strong>' + trips.reduce((s,t)=>s+t.expenses.length,0) + '</strong><span>累计记录</span></div></div>';
     html += '<div style="width:100%;margin-bottom:16px;">';
     trips.forEach(t => {
       const n = t.expenses.length;
@@ -341,7 +526,7 @@ function renderWelcome() {
     });
     html += '</div>';
   }
-  html += `<button class="btn btn-primary btn-block" onclick="showCreateTrip()">＋ 新建团组</button></div>`;
+  html += `<button class="btn btn-primary btn-block" onclick="showCreateTrip()"><span class="btn-icon">${iconSvg('plus')}</span>新建团组</button></div>`;
   $('content').innerHTML = html;
 }
 
@@ -354,8 +539,8 @@ function renderRecord() {
   let html = '';
 
   if (hs.length === 0) {
-    html += `<div class="empty"><div class="emoji-big">👥</div><p>请先添加参与的家庭</p>
-      <button class="btn btn-primary" onclick="showView('settings')">去设置</button></div>`;
+    html += `<div class="empty"><div class="emoji-big is-empty">${iconSvg('households')}</div><p>先添加参与家庭，再开始记录费用。</p>
+      <button class="btn btn-primary" onclick="showView('settings')">去添加家庭</button></div>`;
     $('content').innerHTML = html;
     return;
   }
@@ -363,7 +548,17 @@ function renderRecord() {
   const eData = editing || { amount:'', category:'food', date:todayStr(), paidBy:hs[0].id,
     participants:hs.map(h=>h.id), splitMode:'equal', customSplit:null, adultPrice:'', childPrice:'', note:'' };
 
-  html += `<div class="card">
+  html += `<div class="card hero-panel">
+    <div class="section-kicker">当前团组</div>
+    <div class="hero-total">¥${fmt(total)}</div>
+    <div class="subtle-note">${hs.length}户参与 · ${t.expenses.length}笔记录 · 继续新增费用</div>
+    <div class="hero-meta">
+      <span class="hero-pill">团组：${esc(t.name)}</span>
+      <span class="hero-pill">默认按实际参与结算</span>
+    </div>
+  </div>`;
+
+  html += `<div class="card amount-entry">
     <div class="form-group text-center">
       <div style="font-size:13px;color:var(--text-light);margin-bottom:2px;">金额（元）</div>
       <div style="display:flex;align-items:center;justify-content:center;">
@@ -376,7 +571,7 @@ function renderRecord() {
     <div class="form-group"><div class="form-label">分类</div><div class="cat-grid" id="catGrid">`;
   CATEGORIES.forEach(c => {
     html += `<div class="cat-btn${eData.category===c.key?' active':''}" data-cat="${c.key}" onclick="selectCat(this)">
-      <span class="emoji">${c.icon}</span>${c.name}</div>`;
+      <span class="emoji">${iconSvg(c.icon)}</span>${c.name}</div>`;
   });
   html += `</div></div>
     <div class="form-group"><div class="form-label">日期</div>
@@ -410,11 +605,17 @@ function renderRecord() {
 function renderList() {
   const t = trip();
   const total = t.expenses.reduce((s,e)=>s+e.amount, 0);
-  let html = `<div class="card text-center" style="padding:8px 14px;">
-    <span style="font-size:13px;color:var(--text-light);">${t.expenses.length}笔记录 · 总花费</span>
-    <div style="font-size:22px;font-weight:700;color:var(--accent);">¥${fmt(total)}</div></div>`;
+  let html = `<div class="card hero-panel">
+    <div class="section-kicker">费用明细</div>
+    <div class="hero-total">¥${fmt(total)}</div>
+    <div class="subtle-note">${t.expenses.length}笔记录，按日期分组查看</div>
+    <div class="hero-meta">
+      <span class="hero-pill">团组：${esc(t.name)}</span>
+      <span class="hero-pill">支持查看、编辑与删除</span>
+    </div>
+  </div>`;
   if (t.expenses.length === 0) {
-    html += '<div class="empty"><div class="emoji-big">📋</div><p>还没有任何记录</p></div>';
+    html += `<div class="empty"><div class="emoji-big is-empty">${iconSvg('list')}</div><p>还没有费用记录，先去记第一笔。</p></div>`;
     $('content').innerHTML = html;
     return;
   }
@@ -422,6 +623,7 @@ function renderList() {
   const groups = {};
   t.expenses.forEach(e => { (groups[e.date] = groups[e.date]||[]).push(e); });
   const dates = Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+  html += '<div class="expense-list-card">';
   dates.forEach(d => {
     const dt = new Date(d);
     const dayTotal = groups[d].reduce((s,e)=>s+e.amount,0);
@@ -430,7 +632,7 @@ function renderList() {
     groups[d].forEach(e => {
       const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
       html += `<div class="expense-item" onclick="showExpenseDetail('${e.id}')">
-        <span class="expense-icon">${cat.icon}</span>
+        <span class="expense-icon">${iconSvg(cat.icon)}</span>
         <div class="expense-info">
           <div class="expense-note">${esc(e.note||cat.name)}</div>
           <div class="expense-meta">${esc(hmap[e.paidBy]||'?')}付 · ${e.participants.length}户参与</div>
@@ -439,20 +641,27 @@ function renderList() {
     });
     html += '</div>';
   });
+  html += '</div>';
   $('content').innerHTML = html;
 }
 
 function renderSettle() {
   const t = trip();
   if (t.expenses.length === 0) {
-    $('content').innerHTML = '<div class="empty"><div class="emoji-big">💰</div><p>记几笔账再来结算吧</p></div>';
+    $('content').innerHTML = `<div class="empty"><div class="emoji-big is-empty">${iconSvg('settle')}</div><p>有了费用记录后，这里会自动生成结算结果。</p></div>`;
     return;
   }
   const { details, transfers } = calcSettlement();
   const total = t.expenses.reduce((s,e)=>s+e.amount, 0);
-  let html = `<div class="card text-center" style="padding:8px 14px;">
-    <span style="font-size:13px;color:var(--text-light);">总花费</span>
-    <div style="font-size:22px;font-weight:700;color:var(--accent);">¥${fmt(total)}</div></div>`;
+  let html = `<div class="card hero-panel">
+    <div class="section-kicker">结算概览</div>
+    <div class="hero-total">¥${fmt(total)}</div>
+    <div class="subtle-note">自动整理各户垫付、应付和建议转账路径</div>
+    <div class="hero-meta">
+      <span class="hero-pill">${details.length}户参与结算</span>
+      <span class="hero-pill">${transfers.length}条建议转账</span>
+    </div>
+  </div>`;
   html += '<div class="card-title" style="padding:4px 0;">各户明细</div>';
   details.forEach(d => {
     const cls = d.balance > 0.01 ? 'owes' : d.balance < -0.01 ? 'owed' : '';
@@ -460,23 +669,32 @@ function renderSettle() {
       <div class="settle-name">${esc(d.name)}</div>
       <div class="settle-detail"><span>垫付</span><span>¥${fmt(d.paid)}</span></div>
       <div class="settle-detail"><span>应付</span><span>¥${fmt(d.shouldPay)}</span></div>
-      <div class="settle-balance ${d.balance>0.01?'text-danger':d.balance<-0.01?'text-success':''}">${d.balance>0.01?'还需付 ¥'+fmt(d.balance):d.balance<-0.01?'应收回 ¥'+fmt(Math.abs(d.balance)):'✓ 已结清'}</div></div>`;
+      <div class="settle-balance ${d.balance>0.01?'text-danger':d.balance<-0.01?'text-success':''}">${d.balance>0.01?'待支付 ¥'+fmt(d.balance):d.balance<-0.01?'待收回 ¥'+fmt(Math.abs(d.balance)):'已平账'}</div></div>`;
   });
   if (transfers.length > 0) {
-    html += '<div class="card-title" style="padding:8px 0 4px;">转账建议</div>';
+    html += '<div class="card-title" style="padding:8px 0 4px;">建议转账</div>';
     transfers.forEach(tr => {
       html += `<div class="transfer-item">
-        <span>${esc(tr.from)}</span><span class="transfer-arrow">→</span><span>${esc(tr.to)}</span>
+        <span>${esc(tr.from)}</span><span class="transfer-arrow">${iconSvg('arrowRight')}</span><span>${esc(tr.to)}</span>
         <span class="transfer-amount">¥${fmt(tr.amount)}</span></div>`;
     });
   }
-  html += `<button class="btn btn-primary btn-block mt-12" onclick="exportExcel()">📊 导出Excel</button>`;
+  html += `<button class="btn btn-primary btn-block mt-12" onclick="exportExcel()"><span class="btn-icon">${iconSvg('export')}</span>导出Excel</button>`;
   $('content').innerHTML = html;
 }
 
 function renderSettings() {
   const t = trip();
-  let html = '<div class="setting-section"><h3>👥 参与家庭</h3>';
+  let html = `<div class="card hero-panel">
+    <div class="section-kicker">团组设置</div>
+    <div class="hero-total" style="font-size:26px;">${esc(t.name)}</div>
+    <div class="subtle-note">管理参与家庭、导出备份数据和切换团组</div>
+    <div class="hero-meta">
+      <span class="hero-pill">${t.households.length}户家庭</span>
+      <span class="hero-pill">${t.expenses.length}笔记录</span>
+    </div>
+  </div>`;
+  html += `<div class="setting-section"><h3><span class="section-icon">${iconSvg('households')}</span>参与家庭</h3>`;
   if (t.households.length === 0) {
     html += '<div class="empty" style="padding:16px;"><p>还没有添加家庭</p></div>';
   }
@@ -484,30 +702,30 @@ function renderSettings() {
     html += `<div class="member-item">
       <span class="name">${esc(h.name)}</span>
       <span class="detail">${h.adults}大${h.children?h.children+'小':''}</span>
-      <button class="del-btn" onclick="if(confirm('删除「${esc(h.name)}」？相关记录也会删除'))removeHH('${h.id}')">✕</button></div>`;
+      <button class="del-btn" onclick="if(confirm('删除「${esc(h.name)}」？相关记录也会删除'))removeHH('${h.id}')">${iconSvg('trash')}</button></div>`;
   });
-  html += `<button class="btn btn-outline btn-block mt-8" onclick="showAddHousehold()">＋ 添加家庭</button></div>`;
+  html += `<button class="btn btn-outline btn-block mt-8" onclick="showAddHousehold()"><span class="btn-icon">${iconSvg('plus')}</span>添加家庭</button></div>`;
 
-  html += `<div class="setting-section"><h3>⚙️ 团组设置</h3>
+  html += `<div class="setting-section"><h3><span class="section-icon">${iconSvg('settings')}</span>团组设置</h3>
     <div class="card"><div class="form-group"><div class="form-label">团组名称</div>
       <input class="form-input" id="tripNameInput" value="${esc(t.name)}" onchange="renameTripFn()"></div></div></div>`;
 
-  html += `<div class="setting-section"><h3>📁 数据管理</h3>
-    <button class="btn btn-outline btn-block mb-8" onclick="exportExcel()">📊 导出Excel</button>
-    <button class="btn btn-outline btn-block mb-8" onclick="exportBackup()">💾 备份数据(JSON)</button>
-    <button class="btn btn-outline btn-block mb-8" onclick="$('importFile').click()">📂 恢复数据(JSON)</button>
+  html += `<div class="setting-section"><h3><span class="section-icon">${iconSvg('record')}</span>数据管理</h3>
+    <button class="btn btn-outline btn-block mb-8" onclick="exportExcel()"><span class="btn-icon">${iconSvg('export')}</span>导出Excel</button>
+    <button class="btn btn-outline btn-block mb-8" onclick="exportBackup()"><span class="btn-icon">${iconSvg('backup')}</span>备份数据(JSON)</button>
+    <button class="btn btn-outline btn-block mb-8" onclick="$('importFile').click()"><span class="btn-icon">${iconSvg('import')}</span>导入备份(JSON)</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)">
     </div>`;
 
-  html += `<div class="setting-section"><h3>🗂️ 团组管理</h3>`;
+  html += `<div class="setting-section"><h3><span class="section-icon">${iconSvg('trip')}</span>团组管理</h3>`;
   trips.forEach(tr => {
     const isCur = tr.id === currentTripId;
     html += `<div class="trip-item" style="${isCur?'border:2px solid var(--primary)':''}">
       <span class="name" onclick="switchTrip('${tr.id}')">${esc(tr.name)}${isCur?' (当前)':''}</span>
-      ${!isCur?`<button class="del-btn" onclick="if(confirm('确定删除？')){deleteTrip('${tr.id}');render();}">✕</button>`:''}
+      ${!isCur?`<button class="del-btn" onclick="if(confirm('确定删除？')){deleteTrip('${tr.id}');render();}">${iconSvg('trash')}</button>`:''}
     </div>`;
   });
-  html += `<button class="btn btn-outline btn-block mt-8" onclick="showCreateTrip()">＋ 新建团组</button></div>`;
+  html += `<button class="btn btn-outline btn-block mt-8" onclick="showCreateTrip()"><span class="btn-icon">${iconSvg('plus')}</span>新建团组</button></div>`;
   $('content').innerHTML = html;
 }
 
@@ -640,7 +858,7 @@ function showExpenseDetail(eid) {
   const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
   const hmap = {}; t.households.forEach(h=>hmap[h.id]=h.name);
   const split = calcSplit(e, t.households);
-  let html = `<h3>${cat.icon} ${esc(e.note||cat.name)}</h3>
+  let html = `<h3><span class="section-icon">${iconSvg(cat.icon)}</span>${esc(e.note||cat.name)}</h3>
     <div style="text-align:center;font-size:28px;font-weight:700;color:var(--accent);margin-bottom:12px;">¥${fmt(e.amount)}</div>
     <div class="settle-detail"><span>日期</span><span>${e.date}</span></div>
     <div class="settle-detail"><span>付款</span><span>${esc(hmap[e.paidBy]||'?')}</span></div>
@@ -661,7 +879,7 @@ function showExpenseDetail(eid) {
 function editExpenseFn(eid) { editingExpenseId = eid; closeModal(); showView('record'); }
 
 function showCreateTrip() {
-  showModal(`<h3>新建团组</h3>
+  showModal(`<h3><span class="section-icon">${iconSvg('plus')}</span>新建团组</h3>
     <div class="form-group"><input class="form-input" id="newTripName" placeholder="例如：2026西藏团" maxlength="20"></div>
     <button class="btn btn-primary btn-block" onclick="doCreateTrip()">创建</button>`);
   setTimeout(()=>$('newTripName')&&$('newTripName').focus(), 300);
@@ -676,7 +894,7 @@ function doCreateTrip() {
 }
 
 function showAddHousehold() {
-  showModal(`<h3>添加家庭</h3>
+  showModal(`<h3><span class="section-icon">${iconSvg('plus')}</span>添加家庭</h3>
     <div class="form-group"><div class="form-label">家庭名称</div><input class="form-input" id="hhName" placeholder="例如：张三家" maxlength="10"></div>
     <div style="display:flex;gap:10px;">
       <div class="form-group" style="flex:1"><div class="form-label">大人数</div><input type="number" class="form-input" id="hhAdults" value="2" min="0" max="10"></div>
@@ -713,8 +931,8 @@ function exportExcel() {
     xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
     <style>td,th{padding:4px 8px;border:1px solid #ccc;} th{background:#4A90D9;color:#fff;} .num{mso-number-format:"\\#\\,\\#\\#0\\.00";}</style></head><body>`;
   // Sheet 1: 费用明细
-  html += `<table><tr><th colspan="9">${esc(t.name)} - 费用明细</th></tr>
-    <tr><th>日期</th><th>分类</th><th>备注</th><th>金额</th><th>付款人</th><th>参与户</th><th>分摊方式</th><th>大人单价</th><th>小孩单价</th></tr>`;
+  html += `<table><tr><th colspan="9">${esc(t.name)} - 费用记录</th></tr>
+    <tr><th>日期</th><th>分类</th><th>说明</th><th>金额</th><th>付款方</th><th>参与家庭</th><th>分摊方式</th><th>大人单价</th><th>小孩单价</th></tr>`;
   t.expenses.forEach(e => {
     const cat = CATEGORIES.find(c=>c.key===e.category)||CATEGORIES[6];
     html += `<tr><td>${e.date}</td><td>${cat.name}</td><td>${esc(e.note||'')}</td>
@@ -724,17 +942,17 @@ function exportExcel() {
       <td class="num">${e.adultPrice||''}</td><td class="num">${e.childPrice||''}</td></tr>`;
   });
   const total = t.expenses.reduce((s,e)=>s+e.amount,0);
-  html += `<tr><td colspan="3"><b>合计</b></td><td class="num"><b>${total}</b></td><td colspan="3"></td></tr></table><br>`;
+  html += `<tr><td colspan="3"><b>总计</b></td><td class="num"><b>${total}</b></td><td colspan="3"></td></tr></table><br>`;
   // Sheet 2: AA结算
-  html += `<table><tr><th colspan="4">${esc(t.name)} - AA结算</th></tr>
-    <tr><th>家庭</th><th>垫付</th><th>应付</th><th>差额</th></tr>`;
+  html += `<table><tr><th colspan="4">${esc(t.name)} - 结算结果</th></tr>
+    <tr><th>家庭</th><th>已垫付</th><th>应承担</th><th>差额</th></tr>`;
   details.forEach(d => {
     html += `<tr><td>${esc(d.name)}</td><td class="num">${d.paid.toFixed(2)}</td>
       <td class="num">${d.shouldPay.toFixed(2)}</td><td class="num">${d.balance.toFixed(2)}</td></tr>`;
   });
   html += '</table><br>';
   if (transfers.length > 0) {
-    html += `<table><tr><th colspan="3">转账建议</th></tr><tr><th>付款方</th><th>收款方</th><th>金额</th></tr>`;
+    html += `<table><tr><th colspan="3">建议转账</th></tr><tr><th>付款方</th><th>收款方</th><th>金额</th></tr>`;
     transfers.forEach(tr => {
       html += `<tr><td>${esc(tr.from)}</td><td>${esc(tr.to)}</td><td class="num">${tr.amount.toFixed(2)}</td></tr>`;
     });
